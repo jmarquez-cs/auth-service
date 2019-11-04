@@ -1,5 +1,22 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+You will need to have Docker Desktop CE v2.0.0.3 or higher
+
+## Run CockroachDB cluster
+
+In the auth-service root directory, run:
+
+### `docker-compose up -d`
+
+Runs CockroachDB with 1 master node and 2 slave nodes oon a cluster network 'roachnet'
+Open [http://localhost:8080](http://localhost:8080) to view it in the browser.
+
+Now, install the [cockroachDB binaries](https://www.cockroachlabs.com/docs/stable/install-cockroachdb-mac.html), run:
+
+## `cat schema.sql | cockroachdb sql --insecure`
+
+Uploads the schema.sql file into the cockroachdb cluster insecurely.
+
 ## Available Scripts
 
 In the project directory, you can run:

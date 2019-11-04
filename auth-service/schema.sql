@@ -1,0 +1,81 @@
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+DROP DATABASE IF EXISTS auth CASCADE;
+CREATE DATABASE IF NOT EXISTS auth;
+SET DATABASE = auth;
+
+CREATE TABLE IF NOT EXISTS users (
+	id
+		UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+	username
+		VARCHAR(18) NOT NULL DEFAULT '',
+	email
+		VARCHAR NOT NULL UNIQUE,
+	pass
+		VARCHAR NOT NULL,
+	phone_number
+		VARCHAR NOT NULL DEFAULT '',
+	email_verification
+		BOOLEAN DEFAULT FALSE,
+	sms_verification
+		BOOLEAN DEFAULT FALSE,
+	google_verification
+		BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS profiles (
+	id
+		UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+	user_id
+		UUID NOT NULL REFERENCES users ON DELETE CASCADE,
+	email
+		VARCHAR NOT NULL REFERENCES users (email),
+	firstname
+		VARCHAR NOT NULL,
+	lastname
+		VARCHAR NOT NULL,
+	bio
+		VARCHAR NOT NULL,
+	location
+		VARCHAR,
+	website
+		VARCHAR NOT NULL,
+	webapp
+		VARCHAR NOT NULL,
+	sms
+		VARCHAR NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS verification_codes (
+	id
+		UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+	user_id
+		UUID NOT NULL REFERENCES users ON DELETE CASCADE,
+	created_at
+		TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS beta_keys (
+	id
+		UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+	user_id
+		UUID NOT NULL REFERENCES users ON DELETE CASCADE,
+	created_at
+		TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS password_resets (
+	id
+		UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+	user_id
+		UUID NOT NULL REFERENCES users ON DELETE CASCADE,
+	created_at
+		TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS login_codes (
+	email
+		VARCHAR NOT NULL,
+	code
+		VARCHAR NOT NULL
+);
