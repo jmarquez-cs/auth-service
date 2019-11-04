@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  cockroachdb-master-node:
+    image: cockroachdb/cockroach:v19.1.2
+    container_name: cockroachdb-master-node
+    expose:     # Exposes ports without publishing them to the host machine - they’ll only be accessible to linked services
+      - '8080'
+      - '26257'
+      - '5432'
+    ports: ['8080:8080', '26257:26257', '5432:5432']    # Dashboard, PostGres Driver, PostGresql
+    volumes:
+      - master-node-volume:/cockroach/cockroach-data
+    labels:
+      com.cockroachdb: "cockroachdb"
+    networks:
+      default:
+         aliases: [cockroachdb-master-node]
+      roachnet:
+        aliases: [cockroachdb-master-node]
+    command: start --insecure
+
+  cockroachdb-slave-node:
+    image: cockroachdb/cockroach:v19.1.2
+    container_name: cockroachdb-slave-node
+    volumes:
+      - slave-node-volume:/cockroach/cockroach-data
+    networks:
+      roachnet:
+        aliases: [cockroachdb-slave-node]
+    command: start --insecure --join=cockroachdb-master-node
+
+  cockroachdb-slave-node-2:
+    image: cockroachdb/cockroach:v19.1.2
+    container_name: cockroachdb-slave-node-2
+    volumes:
+      - slave-node-2-volume:/cockroach/cockroach-data
+    networks:
+       roachnet:
+        aliases: [cockroachdb-slave-node-2]
+    command: start --insecure --join=cockroachdb-master-node
+
+networks:
+  default:
+  roachnet:
+
+volumes:
+  master-node-volume:
+  slave-node-volume:
+  slave-node-2-volume:
