@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/lib/pq"
+	"github.com/gorilla/mux"
 )
 
 // Init users as slice User struct
@@ -41,7 +42,7 @@ func (s *server) handleRegistration() http.HandlerFunc {
 			switch err.(type) {
 			case *pq.Error:
 				registrationError := errors.New(err.(*pq.Error).Message)
-				fmt.Println(err)
+				CheckError(registrationError)
 				http.Error(w, err.(*pq.Error).Message, http.StatusInternalServerError)
 				return
 			default:
@@ -160,8 +161,7 @@ func (s *server) handleLogin() http.HandlerFunc {
 					messageSent := SendSMSCode(user)
 					if messageSent {
 						verificationData := UserVerification{
-							EmailVerification: user.EmailVerification,
-							GoogleVerification: user.GoogleVerification,
+							User: user,
 						}
 						json.NewEncoder(w).Encode(verificationData)
 						// Redirect to form to input code
@@ -190,8 +190,41 @@ func (s *server) handleLogin() http.HandlerFunc {
 		} else {
 			loginError := errors.New("Invalid Credentials")
 			CheckError(loginError)
-			http.Error(w, invalidCredentials, http.StatusForbidden)
+			http.Error(w, "Invalid Credentials", http.StatusForbidden)
 			return
 		}
+	}
+}
+
+func (s *server) handleUserExists() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var (
+			params = mux.Vars(r)
+			email  = params["email"]
+		)
+
+		ctx := r.Context()
+
+		var user User
+
+		err := s.db.QueryRowContext(ctx,
+			`SELECT
+			id
+			FROM auth.public.users WHERE email = $1`, email,
+		).Scan(
+			&user.ID,
+		)
+
+		var response struct {
+			UserExists bool `json:"user_exists"`
+		}
+
+		if err != nil {
+			response.UserExists = false
+		} else {
+			response.UserExists = true
+		}
+
+		json.NewEncoder(w).Encode(response)
 	}
 }
