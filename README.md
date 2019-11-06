@@ -8,7 +8,7 @@ In the auth-service root directory, run:
 
 ### `docker-compose up -d`
 
-Runs CockroachDB with 1 master node and 2 slave nodes oon a cluster network 'roachnet'
+Runs CockroachDB with 1 master node and 2 slave nodes on a cluster network 'roachnet'
 Open [http://localhost:8080](http://localhost:8080) to view it in the browser.
 
 Now, install the [cockroachDB binaries](https://www.cockroachlabs.com/docs/stable/install-cockroachdb-mac.html), run:
