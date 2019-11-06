@@ -21,6 +21,6 @@ func main() {
 		router: mux.NewRouter(),
 	}
 	
-	server.ConnectSQLDB()
+	server.ConnectCRDB()
 	server.Start()
 }

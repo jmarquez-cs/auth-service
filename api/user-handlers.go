@@ -1,33 +1,15 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
-	"path/filepath"
-	"time"
-
-	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 )
 
-// Struct (model)
-type User struct {
-	ID                 string `json:"id"`
-	Username           string `json:"username"`
-	Email              string `json:"email"`
-	Password           string `json:"password,omitempty"`
-	PhoneNumber        string `json:"phone_number,omitempty"`
-	EmailVerification  bool   `json:"email_verification"`
-	SMSVerification    bool   `json:"sms_verification"`
-	GoogleVerification bool   `json:"google_verification"`
-}
-
 // Init users as slice User struct
-var users []auth.User
+var users []User
 var results []string
 
 func (s *server) handleRegistration() http.HandlerFunc {
@@ -35,7 +17,7 @@ func (s *server) handleRegistration() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 
 		ctx := r.Context()
-		var user auth.User
+		var user User
 		_ = json.NewDecoder(r.Body).Decode(&user)
 
 		if err := s.db.PingContext(ctx); err != nil {
@@ -102,7 +84,7 @@ func (s *server) handleLogin() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 
 		ctx := r.Context()
-		var user auth.User
+		var user User
 		_ = json.NewDecoder(r.Body).Decode(&user)
 		providedPass := user.Password
 
@@ -175,7 +157,7 @@ func (s *server) handleLogin() http.HandlerFunc {
 
 				if user.SMSVerification {
 					// Send user the verification code by sms
-					messageSent := auth.SendSMSCode(user)
+					messageSent := SendSMSCode(user)
 					if messageSent {
 						verificationData := UserVerification{
 							EmailVerification: user.EmailVerification,
@@ -206,8 +188,8 @@ func (s *server) handleLogin() http.HandlerFunc {
 				json.NewEncoder(w).Encode(userToken)
 			}
 		} else {
-			loginError := errors.New(invalidCredentials)
-			auth.CheckError(loginError)
+			loginError := errors.New("Invalid Credentials")
+			CheckError(loginError)
 			http.Error(w, invalidCredentials, http.StatusForbidden)
 			return
 		}

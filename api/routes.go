@@ -1,17 +1,13 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
-	"strings"
-	"time"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
@@ -54,7 +50,7 @@ func (s *server) ConnectCRDB() {
 	var err error
 	if s.origin, err = url.Parse(originStr); err != nil || !s.origin.IsAbs() {
 		log.Fatalln("invalid origin")
-		fmt.Printf(err) // TODO: Create Logging for HTTP tracing
+		CheckError(err) // TODO: Create Logging for HTTP tracing
 		return
 	}
 
