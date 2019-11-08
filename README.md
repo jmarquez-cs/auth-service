@@ -1,5 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Prere  quisites
 You will need to have Docker Desktop CE v2.0.0.3 or higher
 
 ## Run CockroachDB cluster
