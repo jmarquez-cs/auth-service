@@ -2,9 +2,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Prerequisites
 
-- Must have [Docker Desktop Community Edition](https://docs.docker.com/install/overview/) installed
+- Must have [Docker Desktop Community Edition version 2.0.0.3 or higher](https://docs.docker.com/install/overview/) installed
 - Must have [CockroachDB binaries](https://www.cockroachlabs.com/docs/stable/install-cockroachdb-mac.html) installed
-You will need to have Docker Desktop CE v2.0.0.3 or higher
 
 ## Run CockroachDB cluster
 
